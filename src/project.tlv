@@ -39,13 +39,27 @@
 
 
 \TLV my_design()
-   *uo_out = 8'b1 ;
-   *uo_out = >>1$out1;
-   $out1 = 8'd2;
+   $reset = *reset ;
    
-    
+   $abcd[7:0] = >>1$reset ? 8'b1: 
+                  $forward ?
+                     >>1$abcd[7:0] << 1:  // Shift left 
+                     //default 
+                     >>1$abcd[7:0] >> 1; // Shift right
+   
+   $forward = $reset ? 1'b1 :
+               >>1$abcd[7:0] == 8'd8 
+                  ? 1'b0
+               : >>1$abcd[7:0] == 8'd1
+                  ? 1'b1
+                  //default
+                  : >>1$forward;
+                  
+               
    
    
+   
+   *uo_out = $abcd ;
    // Connect Tiny Tapeout outputs. Note that uio_ outputs are not available in the Tiny-Tapeout-3-based FPGA boards.
    //*uo_out = 8'b0;
    m5_if_neq(m5_target, FPGA, ['*uio_out = 8'b0;'])
