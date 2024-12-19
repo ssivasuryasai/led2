@@ -39,7 +39,7 @@
 
 
 \TLV my_design()
-   $reset = *reset ;
+   $reset = *ui_in[0] ;
    
    $abcd[7:0] = >>1$reset ? 8'b1: 
                   $forward ?
