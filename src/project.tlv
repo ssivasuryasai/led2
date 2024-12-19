@@ -39,7 +39,7 @@
 
 
 \TLV my_design()
-   *uo_out = *ui_in;
+   *uo_out = 8'b1;
    
    
     
