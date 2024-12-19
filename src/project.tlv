@@ -41,30 +41,36 @@
 \TLV my_design()
    $reset = *ui_in[0] ;
    
-   $count[31:0] = (>>1$reset || >>1$count == 32'd1000000 ) ? 32'b0 : >>1$count +1 ;
-   $clk_pulse = >>1$reset ? 1'b0: $count == 32'd1000000 ? ~>>1$clk_pulse : >>1$clk_pulse ;
-   $abcd[7:0] = >>1$reset ? 8'b1: 
+   $count[31:0] = (>>1$reset || >>1$count == 32'd10000000 ) ? 32'b0 : >>1$count +1 ;
+   $clk_pulse = >>1$reset ? 1'b0: $count == 32'd10000000 ? ~>>1$clk_pulse : >>1$clk_pulse ;
+   
+   $led_output[7:0] = >>1$reset ? 8'b1: 
                 (!>>1$clk_pulse && $clk_pulse) ? 
                   $forward ?
-                     >>1$abcd[7:0] << 1:  // Shift left 
+                     >>1$led_output[7:0] << 1:  // Shift left 
                      //default 
-                     >>1$abcd[7:0] >> 1 // Shift right
-                  :>>1$abcd ;
-   $forward = $reset ? 1'b1 :
-              (!>>1$clk_pulse && $clk_pulse) ? 
-               >>1$abcd[7:0] == 8'h80 
-                  ? 1'b0
-               : >>1$abcd[7:0] == 8'h1
-                  ? 1'b1
-                  //default
-                  : >>1$forward
-               :>>1$forward ;
+                     >>1$led_output[7:0] >> 1 // Shift right
+                  :>>1$led_output ;
                   
+   $forward = $reset ? 1'b1 :  // forward is right to left when == 1'b1
+              
+               ($right_edge  && $led_output < 8'd8)
+                  ? 1'b1
+               :  ($left_edge  && $led_output > 8'd8)
+                  ? 1'b0
+                  //default
+                  : >>1$forward;
                
+                  
+   $left_btn = *ui_in[3];
+   $left_edge = (!>>1$left_btn && $left_btn) ;
+   $right_btn = *ui_in[1];
+   $right_edge = (!>>1$right_btn && $right_btn) ;
    
    
    
-   *uo_out = $abcd ;
+   
+   *uo_out = $led_output ;
    // Connect Tiny Tapeout outputs. Note that uio_ outputs are not available in the Tiny-Tapeout-3-based FPGA boards.
    //*uo_out = 8'b0;
    m5_if_neq(m5_target, FPGA, ['*uio_out = 8'b0;'])
