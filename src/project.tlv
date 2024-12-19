@@ -41,8 +41,8 @@
 \TLV my_design()
    $reset = *ui_in[0] ;
    
-   $count[31:0] = (>>1$reset || >>1$count == 32'd10000000 ) ? 32'b0 : >>1$count +1 ;
-   $clk_pulse = >>1$reset ? 1'b0: $count == 32'd10000000 ? ~>>1$clk_pulse : >>1$clk_pulse ;
+   $count[31:0] = (>>1$reset || >>1$count == 32'd1000000 ) ? 32'b0 : >>1$count +1 ;
+   $clk_pulse = >>1$reset ? 1'b0: $count == 32'd1000000 ? ~>>1$clk_pulse : >>1$clk_pulse ;
    $abcd[7:0] = >>1$reset ? 8'b1: 
                 (!>>1$clk_pulse && $clk_pulse) ? 
                   $forward ?
@@ -52,9 +52,9 @@
                   :>>1$abcd ;
    $forward = $reset ? 1'b1 :
               (!>>1$clk_pulse && $clk_pulse) ? 
-               >>1$abcd[7:0] == 8'd8 
+               >>1$abcd[7:0] == 8'h80 
                   ? 1'b0
-               : >>1$abcd[7:0] == 8'd1
+               : >>1$abcd[7:0] == 8'h1
                   ? 1'b1
                   //default
                   : >>1$forward
