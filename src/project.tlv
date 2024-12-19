@@ -39,8 +39,9 @@
 
 
 \TLV my_design()
-   *uo_out = 8'b1;
-   
+   *uo_out = 8'b1 ;
+   *uo_out = >>1$out1;
+   $out1 = 8'd2;
    
     
    
